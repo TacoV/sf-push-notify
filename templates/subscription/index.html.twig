@@ -3,7 +3,125 @@
 {% block title %}Subscription index{% endblock %}
 
 {% block body %}
-    <h1>Subscription index</h1>
+
+    <h1>Notification subscriptions</h1>
+
+    <h2>Subscribe!</h2>
+
+    <script>
+        function registerServiceWorker() {
+            if (!('serviceWorker' in navigator)) {
+                console.error("Service Worker isn't supported on this browser.");
+                return;
+            }
+            return navigator.serviceWorker
+                .register('/service-worker.js')
+                .then(function (registration) {
+                    console.log('Service worker successfully registered.');
+                    return registration;
+                })
+                .catch(function (err) {
+                    console.error('Unable to register service worker.', err);
+                });
+        }
+
+        const vapidPublicKey = 'BLtOgPYtZ3lNa4x6LAHap7MffDMZvDAk6kA9BoUwD50orS4Q2bPNtJ03vTYwVOtFBR404E8WOI7XxSymaZhCsHI'
+        function subscribeUserToPush() {
+            return navigator.serviceWorker
+                .register('/service-worker.js')
+                .then(function (registration) {
+                    const subscribeOptions = {
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(
+                            vapidPublicKey
+                        ),
+                    };
+
+                    return registration.pushManager.subscribe(subscribeOptions);
+                })
+                .then(function (pushSubscription) {
+                    console.log(
+                        'Received PushSubscription: ', JSON.stringify(pushSubscription),
+                        // Received PushSubscription:  {
+                        //    "endpoint":"https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmM6Uhpowo584MHQ48_1_Z9IyAoOT6SmEbx4qtgjf4KimrS0PPK4yCMsRNz7gswkLT5vfi0KuCBJiZDphSua9Ty8PK3bVUyi9iIPOtscBgctykUBDLR_18tjloFNGZYM1PgjU9ITsfD7Wa_6MCg6ath0V85dL8N0uaMRlQcAtGV_PPcyQ",
+                        //    "expirationTime":null,
+                        //    "keys":{
+                        //        "auth":"6Y__Rg54X6SsXjQbfkV5ow",
+                        //        "p256dh":"BMQS7CsUn1PFrl3zY35L0tpQsCM9vLxAVZTAhosZ8o4LqEKveWp0NfIGlPAw9_n5p9eloRPC0myK3Al9bL2mit0"
+                        //    }
+                        // }
+                    );
+                    return pushSubscription;
+                })
+                .then(function(subscription) {
+                    return sendSubscriptionToBackEnd(subscription);
+                });
+
+        }
+
+        function sendSubscriptionToBackEnd(subscription) {
+            return fetch('/subscription/api', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(subscription),
+                })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Bad status code from server.');
+                    }
+                    return response.json();
+                })
+                .then(function (responseData) {
+                    if (!(responseData.data && responseData.data.success)) {
+                        throw new Error('Bad response from server.');
+                    }
+                });
+        }
+
+        function askPermission() {
+            return new Promise(function (resolve, reject) {
+                const permissionResult = Notification.requestPermission(function (result) {
+                    resolve(result);
+                });
+
+                if (permissionResult) {
+                    permissionResult.then(resolve, reject);
+                }
+            }).then(function (permissionResult) {
+                if (permissionResult !== 'granted') {
+                    throw new Error("We weren't granted permission.");
+                }
+            });
+        }
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+
+            for (var i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        if (!('PushManager' in window)) {
+            console.error("Push isn't supported on this browser.");
+        }
+    </script>
+
+    <p>
+        <button onclick="askPermission()">Fix theh permission</button>
+        <button onclick="subscribeUserToPush()">Subscribe</button>
+    </p>
+
+    <h2>Current subscriptions</h2>
 
     <table class="table">
         <thead>

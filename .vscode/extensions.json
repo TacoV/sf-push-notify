@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "vscodevim.vim",
-        "thenouillet.symfony-vscode"
+        "thenouillet.symfony-vscode",
+        "whatwedo.twig"
     ]
 }

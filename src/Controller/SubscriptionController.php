@@ -22,6 +22,29 @@ class SubscriptionController extends AbstractController
         ]);
     }
 
+    #[Route('/api', name: 'receive_pushsub', methods: ['POST'], format: 'json')]
+    public function api(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $subscription = new Subscription();
+        $subscription->setEndpoint($request->getPayload()->get('endpoint'));
+        $keys = $request->getPayload()->get('keys');
+        $subscription->setAuth($keys['auth']);
+        $subscription->setP256dh($keys['p256dh']);
+        // Received PushSubscription:  {
+        //    "endpoint":"https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmM6Uhpowo584MHQ48_1_Z9IyAoOT6SmEbx4qtgjf4KimrS0PPK4yCMsRNz7gswkLT5vfi0KuCBJiZDphSua9Ty8PK3bVUyi9iIPOtscBgctykUBDLR_18tjloFNGZYM1PgjU9ITsfD7Wa_6MCg6ath0V85dL8N0uaMRlQcAtGV_PPcyQ",
+        //    "expirationTime":null,
+        //    "keys":{
+        //        "auth":"6Y__Rg54X6SsXjQbfkV5ow",
+        //        "p256dh":"BMQS7CsUn1PFrl3zY35L0tpQsCM9vLxAVZTAhosZ8o4LqEKveWp0NfIGlPAw9_n5p9eloRPC0myK3Al9bL2mit0"
+        //    }
+        // }
+
+        $entityManager->persist($subscription);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_subscription_index', [], Response::HTTP_SEE_OTHER);
+    }
+
     #[Route('/new', name: 'app_subscription_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
