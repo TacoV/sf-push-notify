@@ -26,10 +26,10 @@ class SubscriptionController extends AbstractController
     public function api(Request $request, EntityManagerInterface $entityManager): Response
     {
         $subscription = new Subscription();
-        $subscription->setEndpoint($request->getPayload()->get('endpoint'));
-        $keys = $request->getPayload()->get('keys');
-        $subscription->setAuth($keys['auth']);
-        $subscription->setP256dh($keys['p256dh']);
+        $info = $request->getPayload()->all();
+        $subscription->setEndpoint($info['endpoint']);
+        $subscription->setAuth($info['keys']['auth']);
+        $subscription->setP256dh($info['keys']['p256dh']);
         // Received PushSubscription:  {
         //    "endpoint":"https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmM6Uhpowo584MHQ48_1_Z9IyAoOT6SmEbx4qtgjf4KimrS0PPK4yCMsRNz7gswkLT5vfi0KuCBJiZDphSua9Ty8PK3bVUyi9iIPOtscBgctykUBDLR_18tjloFNGZYM1PgjU9ITsfD7Wa_6MCg6ath0V85dL8N0uaMRlQcAtGV_PPcyQ",
         //    "expirationTime":null,

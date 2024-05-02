@@ -10,3 +10,5 @@ sudo apt update
 sudo apt upgrade -y
 symfony check:requirements
 symfony check:security
+
+composer install
