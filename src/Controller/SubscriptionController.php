@@ -42,35 +42,7 @@ class SubscriptionController extends AbstractController
         $entityManager->persist($subscription);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_subscription_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    #[Route('/new', name: 'app_subscription_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $subscription = new Subscription();
-        $form = $this->createForm(SubscriptionType::class, $subscription);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($subscription);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_subscription_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('subscription/new.html.twig', [
-            'subscription' => $subscription,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_subscription_show', methods: ['GET'])]
-    public function show(Subscription $subscription): Response
-    {
-        return $this->render('subscription/show.html.twig', [
-            'subscription' => $subscription,
-        ]);
+        return $this->json([]);
     }
 
     #[Route('/{id}/edit', name: 'app_subscription_edit', methods: ['GET', 'POST'])]

@@ -103,7 +103,7 @@
     </script>
 
     <p>
-        <button onclick="askPermission()">Fix theh permission</button>
+        <button onclick="askPermission()">Fix the permission</button>
         <button onclick="subscribeUserToPush()">Subscribe</button>
     </p>
 
@@ -123,8 +123,8 @@
         {% for subscription in subscriptions %}
             <tr>
                 <td>{{ subscription.id }}</td>
-                <td>{{ subscription.endpoint }}</td>
-                <td>{{ subscription.p256dh }}</td>
+                <td>{{ subscription.endpoint[:55] }}...{{ subscription.endpoint[-10:] }}</td>
+                <td>{{ subscription.p256dh[:10] }}...{{ subscription.p256dh[-10:] }}</td>
                 <td>{{ subscription.auth }}</td>
                 <td>
                     <a href="{{ path('app_subscription_show', {'id': subscription.id}) }}">show</a>
