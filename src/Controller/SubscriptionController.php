@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Subscription;
 use App\Form\SubscriptionType;
 use App\Repository\SubscriptionRepository;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,30 +46,25 @@ class SubscriptionController extends AbstractController
         return $this->json([]);
     }
 
-    #[Route('/{id}/edit', name: 'app_subscription_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Subscription $subscription, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(SubscriptionType::class, $subscription);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_subscription_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('subscription/edit.html.twig', [
-            'subscription' => $subscription,
-            'form' => $form,
-        ]);
-    }
-
     #[Route('/{id}', name: 'app_subscription_delete', methods: ['POST'])]
     public function delete(Request $request, Subscription $subscription, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$subscription->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($subscription);
             $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_subscription_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/notify', name: 'app_subscription_notify', methods: ['POST'])]
+    public function notify(Request $request, Subscription $subscription, NotificationService $notificationService): Response
+    {
+        if ($this->isCsrfTokenValid('notify'.$subscription->getId(), $request->getPayload()->get('_token'))) {
+            $notificationService->notify(
+                $subscription,
+                'Hello world!'
+            );
         }
 
         return $this->redirectToRoute('app_subscription_index', [], Response::HTTP_SEE_OTHER);

@@ -114,30 +114,34 @@
             <tr>
                 <th>Id</th>
                 <th>Endpoint</th>
-                <th>P256dh</th>
-                <th>Auth</th>
-                <th>actions</th>
+                <th>P256dh / Auth</th>
+                <th>Last notified</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
         {% for subscription in subscriptions %}
             <tr>
                 <td>{{ subscription.id }}</td>
-                <td>{{ subscription.endpoint[:55] }}...{{ subscription.endpoint[-10:] }}</td>
-                <td>{{ subscription.p256dh[:10] }}...{{ subscription.p256dh[-10:] }}</td>
-                <td>{{ subscription.auth }}</td>
                 <td>
-                    <a href="{{ path('app_subscription_show', {'id': subscription.id}) }}">show</a>
-                    <a href="{{ path('app_subscription_edit', {'id': subscription.id}) }}">edit</a>
+                    {{ subscription.endpoint[:55] }}...{{ subscription.endpoint[-10:] }}
+                </td>
+                <td>
+                    {{ subscription.p256dh[:10] }}...{{ subscription.p256dh[-10:] }}
+                    <br />
+                    {{ subscription.auth }}
+                </td>
+                <td>
+                    {{ include('subscription/_delete_form.html.twig') }}
+                    {{ include('subscription/_notify_form.html.twig') }}
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="5">Currently no subscriptions!</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_subscription_new') }}">Create new</a>
 {% endblock %}
