@@ -16,7 +16,7 @@ class NotificationService {
             $sub->getAuth()
         );
 
-        $webPush = new WebPush();
+        $webPush = new WebPush($this->getAuth());
         $report = $webPush->sendOneNotification(
             $subscription,
             json_encode( [ 'message' => $message ] )
@@ -30,5 +30,14 @@ class NotificationService {
             dump("[x] Message failed to sent for subscription {$endpoint}: {$report->getReason()}");
         }
 
+    }
+    private function getAuth() : array {
+        return [
+            'VAPID' => [
+                'subject' => 'https://special-barnacle-wr56qxpjvgf95jw-8000.app.github.dev',
+                'publicKey' => 'BLtOgPYtZ3lNa4x6LAHap7MffDMZvDAk6kA9BoUwD50orS4Q2bPNtJ03vTYwVOtFBR404E8WOI7XxSymaZhCsHI',
+                'privateKey' => 'NZFNNHfqf8Isxr-NhBCLCzgRwywjpZAk6zZhLNX9J2o',
+            ],
+        ];
     }
 }

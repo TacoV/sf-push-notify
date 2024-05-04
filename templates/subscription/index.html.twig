@@ -24,28 +24,26 @@
                     console.error('Unable to register service worker.', err);
                 });
         }
+        let registration = null;
+        async function getReg() { 
+            registration = await registerServiceWorker();
+        }
+        getReg();
 
-        const vapidPublicKey = 'BLtOgPYtZ3lNa4x6LAHap7MffDMZvDAk6kA9BoUwD50orS4Q2bPNtJ03vTYwVOtFBR404E8WOI7XxSymaZhCsHI'
-        function subscribeUserToPush() {
-            return navigator.serviceWorker
-                .register('/service-worker.js')
-                .then(function (registration) {
-                    const subscribeOptions = {
-                        userVisibleOnly: true,
-                        applicationServerKey: urlBase64ToUint8Array(
-                            vapidPublicKey
-                        ),
-                    };
-
-                    return registration.pushManager.subscribe(subscribeOptions);
-                })
-                .then(function(subscription) {
-                    return sendSubscriptionToBackEnd(subscription);
-                });
-
+        async function subscribeUserToPush() {
+            const vapidPublicKey = 'BLtOgPYtZ3lNa4x6LAHap7MffDMZvDAk6kA9BoUwD50orS4Q2bPNtJ03vTYwVOtFBR404E8WOI7XxSymaZhCsHI'
+            const subscribeOptions = {
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(
+                    vapidPublicKey
+                ),
+            };
+            const subscription = await registration.pushManager.subscribe(subscribeOptions);
+            return sendSubscriptionToBackEnd(subscription);
         }
 
         function sendSubscriptionToBackEnd(subscription) {
+            console.log(JSON.stringify(subscription))
             return fetch('/subscription/api', {
                     method: 'POST',
                     headers: {
@@ -103,6 +101,7 @@
     </script>
 
     <p>
+        <button onclick="registerServiceWorker()">Register serviceWorker</button>
         <button onclick="askPermission()">Fix the permission</button>
         <button onclick="subscribeUserToPush()">Subscribe</button>
     </p>
