@@ -55,7 +55,8 @@ class SubscriptionController extends AbstractController
     {
         $notificationService->notify(
             $subscription,
-            'Hello world!'
+            'Notificiation test',
+            'Hello world from subscription #'.$subscription->getId(),
         );
 
         return $this->json([]);

@@ -14,7 +14,7 @@ class NotificationService {
     )
     {}
 
-    public function notify( Sub $sub, string $message ) {
+    public function notify( Sub $sub, string $message, string $body ) {
 
         $subscription = new Subscription(
             $sub->getEndpoint(),
@@ -25,7 +25,7 @@ class NotificationService {
         $webPush = new WebPush($this->getAuth());
         $report = $webPush->sendOneNotification(
             $subscription,
-            json_encode( [ 'message' => $message ] )
+            json_encode( [ 'message' => $message, 'body' => $body ] )
         );
 
         $endpoint = $report->getRequest()->getUri()->__toString();
