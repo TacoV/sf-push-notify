@@ -53,13 +53,11 @@ class SubscriptionController extends AbstractController
     #[Route('/{id}/notify', name: 'app_subscription_notify', methods: ['POST'])]
     public function notify(Request $request, Subscription $subscription, NotificationService $notificationService): Response
     {
-        if ($this->isCsrfTokenValid('notify'.$subscription->getId(), $request->getPayload()->get('_token'))) {
-            $notificationService->notify(
-                $subscription,
-                'Hello world!'
-            );
-        }
+        $notificationService->notify(
+            $subscription,
+            'Hello world!'
+        );
 
-        return $this->redirectToRoute('app_subscription_index', [], Response::HTTP_SEE_OTHER);
+        return $this->json([]);
     }
 }

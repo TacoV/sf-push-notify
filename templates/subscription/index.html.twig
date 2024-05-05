@@ -24,11 +24,6 @@
                     console.error('Unable to register service worker.', err);
                 });
         }
-        let registration = null;
-        async function getReg() { 
-            registration = await registerServiceWorker();
-        }
-        getReg();
 
         async function subscribeUserToPush() {
             const vapidPublicKey = 'BLtOgPYtZ3lNa4x6LAHap7MffDMZvDAk6kA9BoUwD50orS4Q2bPNtJ03vTYwVOtFBR404E8WOI7XxSymaZhCsHI'
@@ -38,34 +33,29 @@
                     vapidPublicKey
                 ),
             };
+            
+            const registration = await registerServiceWorker();
             const subscription = await registration.pushManager.subscribe(subscribeOptions);
             return sendSubscriptionToBackEnd(subscription);
         }
 
         function sendSubscriptionToBackEnd(subscription) {
-            console.log(JSON.stringify(subscription))
-            return fetch('/subscription/api', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(subscription),
-                })
-                .then(function (response) {
-                    if (!response.ok) {
-                        throw new Error('Bad status code from server.');
-                    }
-                    return response.json();
-                })
-                .then(function (responseData) {
-                    if (!(responseData.data && responseData.data.success)) {
-                        throw new Error('Bad response from server.');
-                    }
-                });
+            fetch('/subscription/api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(subscription),
+            })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Bad status code from server.');
+                }
+            });
         }
 
         function askPermission() {
-            return new Promise(function (resolve, reject) {
+            new Promise(function (resolve, reject) {
                 const permissionResult = Notification.requestPermission(function (result) {
                     resolve(result);
                 });
@@ -77,6 +67,12 @@
                 if (permissionResult !== 'granted') {
                     throw new Error("We weren't granted permission.");
                 }
+            });
+        }
+
+        function notify(subId) {
+            fetch('/subscription/'+subId+'/notify', {
+                method: 'POST'
             });
         }
 

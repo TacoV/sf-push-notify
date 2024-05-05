@@ -1,4 +1,1 @@
-<form method="post" action="{{ path('app_subscription_notify', {'id': subscription.id}) }}">
-    <input type="hidden" name="_token" value="{{ csrf_token('notify' ~ subscription.id) }}">
-    <button class="btn">Notify</button>
-</form>
+<button class="btn" onclick="notify({{ subscription.id }})">Notify</button>
