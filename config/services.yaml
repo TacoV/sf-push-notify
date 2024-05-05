@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    vapid.public_key: '%env(VAPID_PUBLIC_KEY)%'
+    vapid.private_key: '%env(VAPID_PRIVATE_KEY)%'
 
 services:
     # default configuration for services in *this* file
@@ -22,3 +24,7 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Service\NotificationService:
+        arguments:
+            $public_key: '%vapid.public_key%'
+            $private_key: '%vapid.private_key%'

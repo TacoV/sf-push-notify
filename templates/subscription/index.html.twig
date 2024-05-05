@@ -26,7 +26,7 @@
         }
 
         async function subscribeUserToPush() {
-            const vapidPublicKey = 'BLtOgPYtZ3lNa4x6LAHap7MffDMZvDAk6kA9BoUwD50orS4Q2bPNtJ03vTYwVOtFBR404E8WOI7XxSymaZhCsHI'
+            const vapidPublicKey = '{{ vapid_public_key }}'
             const subscribeOptions = {
                 userVisibleOnly: true,
                 applicationServerKey: urlBase64ToUint8Array(
@@ -36,6 +36,7 @@
             
             const registration = await registerServiceWorker();
             const subscription = await registration.pushManager.subscribe(subscribeOptions);
+            setTimeout( () => location.reload(), 500);
             return sendSubscriptionToBackEnd(subscription);
         }
 

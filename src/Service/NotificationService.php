@@ -8,6 +8,12 @@ use Minishlink\WebPush\Subscription;
 
 class NotificationService {
 
+    public function __construct(
+        private string $public_key,
+        private string $private_key
+    )
+    {}
+
     public function notify( Sub $sub, string $message ) {
 
         $subscription = new Subscription(
@@ -34,9 +40,9 @@ class NotificationService {
     private function getAuth() : array {
         return [
             'VAPID' => [
-                'subject' => 'https://special-barnacle-wr56qxpjvgf95jw-8000.app.github.dev',
-                'publicKey' => 'BLtOgPYtZ3lNa4x6LAHap7MffDMZvDAk6kA9BoUwD50orS4Q2bPNtJ03vTYwVOtFBR404E8WOI7XxSymaZhCsHI',
-                'privateKey' => 'NZFNNHfqf8Isxr-NhBCLCzgRwywjpZAk6zZhLNX9J2o',
+                'subject' => 'mailto:vapid@example.com',
+                'publicKey' => $this->public_key,
+                'privateKey' => $this->private_key
             ],
         ];
     }

@@ -1,3 +1,4 @@
+.vapid_keys
 
 ###> symfony/framework-bundle ###
 /.env.local
