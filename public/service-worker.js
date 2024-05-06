@@ -3,7 +3,11 @@ self.addEventListener('push', function(event) {
   const image = 'https://cdn.glitch.com/614286c9-b4fc-4303-a6a9-a4cef0601b74%2Flogo.png?v=1605150951230';
   const options = {
     body: data.body,
-    icon: image
+    icon: image,
+    // Star Wars shamelessly taken from the awesome Peter Beverloo
+    // https://tests.peter.sh/notification-generator/
+    vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500],
+
   }
 
   const promiseChain = self.registration.showNotification(data.message, options);
