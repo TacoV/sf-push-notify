@@ -1,0 +1,12 @@
+{
+    "short_name": "PWA test",
+    "start_url" : "/subscription/",
+    "icons": [
+      {
+        "src": "question-512.png",
+        "sizes": "512x512"
+      }
+    ],
+    "display": "standalone"
+  }
+  
