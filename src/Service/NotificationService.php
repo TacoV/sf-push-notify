@@ -23,6 +23,8 @@ class NotificationService {
         );
 
         $webPush = new WebPush($this->getAuth());
+        $webPush->setAutomaticPadding(0);
+
         $report = $webPush->sendOneNotification(
             $subscription,
             json_encode( [ 'message' => $message, 'body' => $body ] )
