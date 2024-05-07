@@ -3,7 +3,7 @@
     "start_url" : "/subscription/",
     "icons": [
       {
-        "src": "question-512.png",
+        "src": "/img/question-512.png",
         "sizes": "512x512"
       }
     ],

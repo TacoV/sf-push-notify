@@ -4,10 +4,6 @@ self.addEventListener('push', function(event) {
   const options = {
     body: data.body,
     icon: image,
-    // Star Wars shamelessly taken from the awesome Peter Beverloo
-    // https://tests.peter.sh/notification-generator/
-    vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500],
-
   }
 
   const promiseChain = self.registration.showNotification(data.message, options);
