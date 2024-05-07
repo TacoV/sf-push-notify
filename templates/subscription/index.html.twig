@@ -8,16 +8,18 @@
 
     <h2>Subscribe!</h2>
 
-    <script src="/js/push-notify.js"></script>
+    <script type="module">
+    import { subscribeUserToPush, notifyUser } from "/js/push-notify.js";
+    const vapid_public_key = "{{ vapid_public_key }}";
+    window.subscribe = () => subscribeUserToPush(vapid_public_key);
+    window.notify = (id) => notifyUser(id);
+    </script>
     
     <script>
-    const vapid_public_key = "{{ vapid_public_key }}";
     </script>
 
     <p>
-        <button onclick="registerServiceWorker()">Register serviceWorker</button>
-        <button onclick="askPermission()">Fix the permission</button>
-        <button onclick="subscribeUserToPush(vapid_public_key)">Subscribe</button>
+        <button onclick="subscribe()">Subscribe</button>
     </p>
 
     <h2>Current subscriptions</h2>

@@ -1,50 +1,65 @@
-function registerServiceWorker() {
+async function registerServiceWorker() {
     if (!('serviceWorker' in navigator)) {
         console.error("Service Worker isn't supported on this browser.");
-        return;
+        return false;
     }
-    return navigator.serviceWorker
-        .register('/js/service-worker.js')
-        .then(function (registration) {
-            console.log('Service worker successfully registered.');
-            return registration;
-        })
-        .catch(function (err) {
-            console.error('Unable to register service worker.', err);
-        });
+    try {
+        const registration = await navigator.serviceWorker
+            .register('/js/service-worker.js');
+        console.log('Service worker successfully registered.');
+        return registration;
+    } catch (err) {
+        console.error('Unable to register service worker.', err);
+        return false;
+    }
 }
 
 async function subscribeUserToPush(vapidPublicKey) {
+    if (!('PushManager' in window)) {
+        console.error("Push isn't supported on this browser.");
+        return;
+    }
+
+    const permission = await askPermission();
+    if ( !permission) {
+        console.error('We have no permission to send Notifications - not subscribing');
+        return;
+    }
+
+    const registration = await registerServiceWorker();
+    if ( registration === false ) {
+        console.error('We have no registered service worker - not subscribing');
+        return;
+    }
+    
     const subscribeOptions = {
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(
             vapidPublicKey
         ),
     };
-    
-    const registration = await registerServiceWorker();
     const subscription = await registration.pushManager.subscribe(subscribeOptions);
-    setTimeout( () => location.reload(), 500);
-    return sendSubscriptionToBackEnd(subscription);
+
+    await sendSubscriptionToBackEnd(subscription);
+
+    location.reload();
 }
 
-function sendSubscriptionToBackEnd(subscription) {
-    fetch('/subscription/api', {
+async function sendSubscriptionToBackEnd(subscription) {
+    const response = await fetch('/subscription/api', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(subscription),
-    })
-    .then(function (response) {
-        if (!response.ok) {
-            throw new Error('Bad status code from server.');
-        }
     });
+    if (!response.ok) {
+        throw new Error('Bad status code from server.');
+    }
 }
 
-function askPermission() {
-    new Promise(function (resolve, reject) {
+async function askPermission(){
+    const permission = await new Promise(function (resolve, reject) {
         const permissionResult = Notification.requestPermission(function (result) {
             resolve(result);
         });
@@ -52,17 +67,25 @@ function askPermission() {
         if (permissionResult) {
             permissionResult.then(resolve, reject);
         }
-    }).then(function (permissionResult) {
-        if (permissionResult !== 'granted') {
-            throw new Error("We weren't granted permission.");
-        }
     });
+    return (permission === 'granted');
 }
 
-function notify(subId) {
-    fetch('/subscription/'+subId+'/notify', {
-        method: 'POST'
-    });
+async function notifyUser(subId) {
+    const response = await fetch(
+        '/subscription/' + subId + '/notify',
+        {
+            method: 'POST'
+        }
+    );
+    if (response.ok) {
+        console.log('Send a push notification successfully');
+    }
+    else {
+        response.json().then(function (data) {
+            throw new Error('Failed to push notification:' + data.detail);
+        });
+    }
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -80,6 +103,4 @@ function urlBase64ToUint8Array(base64String) {
     return outputArray;
 }
 
-if (!('PushManager' in window)) {
-    console.error("Push isn't supported on this browser.");
-}
+export { subscribeUserToPush, notifyUser };

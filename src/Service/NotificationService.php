@@ -36,6 +36,7 @@ class NotificationService {
             dump("[v] Message sent successfully for subscription {$endpoint}.");
         } else {
             dump("[x] Message failed to sent for subscription {$endpoint}: {$report->getReason()}");
+            throw new \Exception("Push notification failed - ".$report->getReason());
         }
 
     }

@@ -50,13 +50,13 @@ class SubscriptionController extends AbstractController
         return $this->redirectToRoute('app_subscription_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/notify', name: 'app_subscription_notify', methods: ['POST'])]
+    #[Route('/{id}/notify', name: 'app_subscription_notify', methods: ['POST'], format: 'json')]
     public function notify(Request $request, Subscription $subscription, NotificationService $notificationService): Response
     {
         $notificationService->notify(
             $subscription,
             'Notificiation test',
-            'Hello world from subscription #'.$subscription->getId(),
+            'Hello world via subscription #'.$subscription->getId(),
         );
 
         return $this->json([]);
