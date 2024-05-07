@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SubscriptionRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
@@ -21,6 +22,9 @@ class Subscription
 
     #[ORM\Column(length: 255)]
     private ?string $auth = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $lastNotified = null;
 
     public function getId(): ?int
     {
@@ -59,6 +63,18 @@ class Subscription
     public function setAuth(string $auth): static
     {
         $this->auth = $auth;
+
+        return $this;
+    }
+
+    public function getLastNotified(): ?\DateTimeInterface
+    {
+        return $this->lastNotified;
+    }
+
+    public function setLastNotified(?\DateTimeInterface $lastNotified): static
+    {
+        $this->lastNotified = $lastNotified;
 
         return $this;
     }

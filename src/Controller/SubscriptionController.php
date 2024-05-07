@@ -51,13 +51,17 @@ class SubscriptionController extends AbstractController
     }
 
     #[Route('/{id}/notify', name: 'app_subscription_notify', methods: ['POST'], format: 'json')]
-    public function notify(Request $request, Subscription $subscription, NotificationService $notificationService): Response
+    public function notify(Subscription $subscription, NotificationService $notificationService, EntityManagerInterface $entityManager): Response
     {
         $notificationService->notify(
             $subscription,
             'Notificiation test',
             'Hello world via subscription #'.$subscription->getId(),
         );
+
+        $subscription->setLastNotified(new \DateTime);
+        $entityManager->persist($subscription);
+        $entityManager->flush();
 
         return $this->json([]);
     }

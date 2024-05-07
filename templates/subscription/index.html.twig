@@ -27,33 +27,43 @@
     <table class="table">
         <thead>
             <tr>
+                <th>Delete</th>
                 <th>Id</th>
                 <th>Endpoint</th>
-                <th>P256dh / Auth</th>
+                <th>P256dh</th>
+                <th>Auth</th>
                 <th>Last notified</th>
-                <th>Actions</th>
+                <th>Send push notification</th>
             </tr>
         </thead>
         <tbody>
         {% for subscription in subscriptions %}
             <tr>
-                <td>{{ subscription.id }}</td>
-                <td>
-                    {{ subscription.endpoint[:55] }}...{{ subscription.endpoint[-10:] }}
-                </td>
-                <td>
-                    {{ subscription.p256dh[:10] }}...{{ subscription.p256dh[-10:] }}
-                    <br />
-                    {{ subscription.auth }}
-                </td>
                 <td>
                     {{ include('subscription/_delete_form.html.twig') }}
+                </td>
+                <td>
+                    #{{ subscription.id }}
+                </td>
+                <td>
+                    {{ subscription.endpoint[-10:] }}
+                </td>
+                <td>
+                    {{ subscription.p256dh[-10:] }}
+                </td>
+                <td>
+                    {{ subscription.auth[-10:] }}
+                </td>
+                <td>
+                    {{ subscription.lastNotified ? subscription.lastNotified|date('j-n G:i', 'Europe/Amsterdam') : '-' }}
+                </td>
+                <td>
                     {{ include('subscription/_notify_form.html.twig') }}
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">Currently no subscriptions!</td>
+                <td colspan="7">Currently no subscriptions!</td>
             </tr>
         {% endfor %}
         </tbody>
